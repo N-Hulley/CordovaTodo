@@ -18,45 +18,60 @@
  */
 var app = {
     // Application Constructor
-    initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+    initialize: function () {
+
+        if (typeof (Storage) === "undefined") {
+            $("main").html("Sorry, you can't use this app without local storage...");
+            return null;
+        }
         let items = [
             new ToDoListItem("Go Shopping", "amco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in repreh"),
             new ToDoListItem("Pick up the kids", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ei"),
             new ToDoListItem("Go Shopping", " cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum")
         ];
-        
-        
-        
-        let list = new ToDoList(items);
+
+
+        let list = localStorage.getItem("list");
+        if (list === undefined) {
+            console.log("Loading list");
+             list = new ToDoList(items);
+             localStorage.setItem("list", list);
+
+        }
+
+
+
+
         $(".toDoListItems").html(list.getHTML());
-        $(".list-item .btn-danger").click(function(e) {
+        $(".list-item .btn-danger").click(function (e) {
             $(`#item-${(e.currentTarget.id)}`).remove();
         });
-        
+
         console.log(list);
+        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+
     },
 
     // deviceready Event Handler
     //
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
-    onDeviceReady: function() {
+    onDeviceReady: function () {
         this.receivedEvent('deviceready');
     },
 
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+    // // Update DOM on a Received Event
+    // receivedEvent: function (id) {
+    //     var parentElement = document.getElementById(id);
+    //     var listeningElement = parentElement.querySelector('.listening');
+    //     var receivedElement = parentElement.querySelector('.received');
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+    //     listeningElement.setAttribute('style', 'display:none;');
+    //     receivedElement.setAttribute('style', 'display:block;');
 
-        console.log('Received Event: ' + id);
-    }
-    
+    //     console.log('Received Event: ' + id);
+    // }
+
 };
 
 
@@ -64,7 +79,16 @@ class ToDoList {
     constructor(items) {
         this.items = items;
     }
-    
+    getJSON() {
+        var json = {
+
+        };
+        for (let i = 0; i < this.items.length; i++) {
+            json.items 
+        }
+
+        
+    }
     getHTML() {
         let rows = ``;
         for (let i = 0; i < this.items.length; i++) {
@@ -113,7 +137,7 @@ class ToDoListItem {
     remove() {
         $(`#item-${this.id}`).remove();
     }
-    
+
 }
 
 
