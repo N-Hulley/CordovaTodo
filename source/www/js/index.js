@@ -1,5 +1,6 @@
 
 let list;
+var newImageSource = "img/default.png";
 var app = {
     // Application Constructor
     initialize: function () {
@@ -10,24 +11,28 @@ var app = {
 
         list = getFromStrorage();
         if (list == null) {
-            
+
             console.log("Loading new list");
-            
+
             let items = [
                 new ToDoListItem("Go Shopping", "amco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in repreh", "https://www.abc.net.au/news/image/11159072-3x2-940x627.jpg"),
             ];
 
-             list = new ToDoList(items);
-             localStorage.setItem("list", JSON.stringify(list));
+            list = new ToDoList(items);
+            localStorage.setItem("list", JSON.stringify(list));
 
         }
 
         $(".toDoListItems").html(list.getHTML());
         $(".finishedItems").html(list.getHTML(true));
-        
+        $(".addItemButton").click(function (e) {
+            askForImage();
+
+
+        });
         $(".addItemConfirm").click(function (e) {
             $(list.addItem(
-                new ToDoListItem($("#title").val(), $("#desc").val(), $("#img").val(), false)
+                new ToDoListItem($("#title").val(), $("#desc").val(), newImageSource, false)
             ).getHTML()).appendTo($(".toDoListItems"));
             attachEvents();
 
@@ -46,6 +51,8 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function () {
+
+
     },
 
     // // Update DOM on a Received Event
@@ -60,7 +67,7 @@ var app = {
     //     console.log('Received Event: ' + id);
     // }
 
-    
+
     onPause: function () {
         if ($("#blinder").length <= 0)
             $("body").append(`<div id="blinder" class="faded">Paused</div>`);
@@ -69,14 +76,57 @@ var app = {
 
     onResume: function () {
         $("#blinder").html("Welcome back");
-        $("#blinder").fadeOut(1000, function() { $(this).remove(); })
+        $("#blinder").fadeOut(1000, function () { $(this).remove(); })
     },
 
 };
+function onSuccess(imageData) {
+    newImageSource = "data:image/jpeg;base64," + imageData;
+    $("#newImage").html(`<img class="w-100 img-fluid" src="${newImageSource}" alt="Your image" /><button id="deleteCurrentImage" class="btn btn-danger">Change image</button>"`);
+    $("#deleteCurrentImage").click(askForImage);
+}
+// Reposition the popover if the orientation changes.
+window.onorientationchange = function () {
+    var cameraPopoverHandle = new CameraPopoverHandle();
+    var cameraPopoverOptions = new CameraPopoverOptions(0, 0, 100, 100, Camera.PopoverArrowDirection.ARROW_ANY, 400, 500);
+    cameraPopoverHandle.setPosition(cameraPopoverOptions);
+}
+function askForImage() {
+    $("#newImage").html(`
+    <button class="btn btn-primary" id="useCamera"> <i class="fa pr-2 fa-camera"></i>Take a picture</button>
+    <button class="btn btn-secondary" id="useStorage"> <i class="fa pr-2 fa-archive"></i>Pick from my pictures</button>
+    `);
+    $("#useCamera").click(function() {
+        openCamera(true);
+    });
+    $("#useStorage").click(function() {
+        openCamera(false);
+    });
+    
+}
+function openCamera(useCamera) {
+    navigator.camera.getPicture(onSuccess, function (message) {
+        alert('Failed to get picture because: ' + message);
+    }, {
+        destinationType: Camera.DestinationType.FILE_URI,
+        sourceType: useCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY
+    });
+    $("#newImage").html(`<button class="btn btn-warning" id="goBack">Back</button>`);
+    $("#goBack").click(function() {
+        askForImage();
+    });
 
+    if (useCamera) {
+
+    } else {
+        $(".cordova-camera-select").prependTo("#newImage");
+        $(".cordova-camera-select").addClass(`btn btn-primary`);
+    }
+
+}
 function getFromStrorage() {
     let json = JSON.parse(localStorage.getItem("list"));
-    if (json == null || json == undefined ) return null;
+    if (json == null || json == undefined) return null;
 
     let list = new ToDoList([]);
 
@@ -97,7 +147,7 @@ class ToDoList {
         this.items = items;
     }
     getJSON() {
-        var json = {items:[]};
+        var json = { items: [] };
         for (let i = 0; i < this.items.length; i++) {
             json.items.push(this.items[i]);
         }
@@ -106,9 +156,9 @@ class ToDoList {
     getHTML(finished) {
 
         let html = ``;
-        
+
         for (let i = 0; i < this.items.length; i++) {
-            if(finished) {
+            if (finished) {
                 if (this.items[i].finished)
                     html += this.items[i].getHTML();
 
@@ -183,8 +233,8 @@ class ToDoListItem {
     getHTML() {
         return `
         
-            <div class="mb-2 toDoListItem card promoting-card" id="${this.id}">
-            <div
+        <div class="mb-2 toDoListItem card promoting-card" id="${this.id}" >
+            <div onclick="toggleImage(${this.id});$(this).toggleClass('spin')"
             class="card-body "
             style="display: flex; justify-content: space-between; align-items: center; "
             >
@@ -205,7 +255,6 @@ class ToDoListItem {
             <a
                 class=" red-text  rotating-button"
                 style="display:block; font-size: 30px;"
-                onclick="toggleImage(${this.id}); $(this).toggleClass('spin')"
                 aria-controls="collapseContent"
                 ><i class="fa fa-arrow-down" aria-hidden="true"></i>
             </a>
@@ -259,16 +308,16 @@ function attachEvents() {
     $(".remove-button").click(function (e) {
         list.remove($(e.currentTarget).closest(".toDoListItem"));
     });
-    
+
     $(".revert-button").click(function (e) {
         list.revert($(e.currentTarget).closest(".toDoListItem"));
     });
-    
+
     $(".finish-button").click(function (e) {
         list.finish($(e.currentTarget).closest(".toDoListItem"));
     });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('input#input_text, textarea#textarea1').characterCounter();
 });

@@ -9,7 +9,7 @@
       content="initial-scale=1, width=device-width, viewport-fit=cover"
     />
 
-    <title>Hello World</title>
+    <title>Nicks Todo List</title>
 
     <!-- external styling librarys -->
     <link
@@ -21,37 +21,63 @@
 
     <!-- custom styling -->
     <link rel="stylesheet" type="text/css" href="css/index.css" />
-
   </head>
 
   <body>
     <div data-role="page" id="homepage">
       <header>
         <!-- As a heading -->
-        <nav class="navbar navbar-light pink ">
+        <nav class="navbar navbar-light pink pt-5">
           <span class="navbar-brand white-text"
-            ><strong>Todo List</strong></span
-          >
+            ><strong>Todo List</strong></span>
         </nav>
       </header>
-      <button
-        class="btn m-2 p-0 btn-floating btn-lg aqua-gradient addItemButton"
-        data-toggle="modal"
-        data-target="#addItem"
-      >
-        +
-      </button>
 
       <main>
-        <div class="container">
-          <h1>Need to do</h1>
-          <div class="toDoListItems"></div>
-          <h1>Done</h1>
-          <div class="finishedItems"></div>
+        <div class="container mt-3">
+          <!-- Nav tabs -->
+          <ul
+            class="nav nav-tabs md-tabs nav-justified primary-color"
+            role="tablist"
+          >
+            <li class="nav-item">
+              <a
+                class="nav-link active font-weight-bold"
+                data-toggle="tab"
+                href="#panel555"
+                role="tab"
+              >
+                <i class="fa fa-list pr-2"></i>Unfinished</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold" data-toggle="tab" href="#panel666" role="tab">
+                <i class="fa pr-2 fa-check-circle"></i>Finished</a
+              >
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div
+              class="tab-pane fade in show active"
+              id="panel555"
+              role="tabpanel"
+            >
+            <button
+              class="btn m-2 p-0 btn-lg aqua-gradient addItemButton"
+              data-toggle="modal"
+              data-target="#addItem"
+            >
+              <i class="fa fa-plus pr-4"></i> Add new task
+            </button>
+              <div class="toDoListItems"></div>
+            </div>
+            <div class="tab-pane fade" id="panel666" role="tabpanel">
+              <div class="finishedItems"></div>
+            </div>
+          </div>
         </div>
       </main>
 
-      <!-- Modal -->
       <div
         class="modal fade"
         id="addItem"
@@ -74,7 +100,6 @@
               </button>
             </div>
             <div class="modal-body pt-0">
-              <!-- Material input -->
               <div class="md-form pt-0">
                 <input
                   type="text"
@@ -83,7 +108,6 @@
                 />
                 <label for="form1">Title</label>
               </div>
-              <!-- Material input -->
               <div class="md-form">
                 <textarea
                   id="desc"
@@ -94,25 +118,23 @@
                 <label for="desc">Description</label>
               </div>
               <div class="md-form pt-0">
-                <input
-                  type="text"
-                  id="img"
-                  class="form-control form-control-lg"
-                />
-                <label for="form1">URL</label>
+                Your image
+                <div id="newImage" class="w-100">
+
+                </div>
               </div>
             </div>
             <div class="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                class="btn btn-danger"
                 data-dismiss="modal"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                class="btn btn-primary addItemConfirm"
+                class="btn btn-success addItemConfirm"
                 data-dismiss="modal"
               >
                 Add
@@ -135,7 +157,7 @@
       }
     </script>
     <!-- required -->
-    <script type="text/javascript" src="cordova.js"></script> 
+    <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
   </body>
 </html>
