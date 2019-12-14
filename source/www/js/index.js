@@ -1,5 +1,8 @@
 
 let list;
+var pictureSource;   // picture source
+var destinationType; // sets the format of returned value 
+
 var newImageSource = "img/default.png";
 var app = {
     // Application Constructor
@@ -25,10 +28,22 @@ var app = {
 
         $(".toDoListItems").html(list.getHTML());
         $(".finishedItems").html(list.getHTML(true));
+        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+
+        
+    },
+
+    // deviceready Event Handler
+    //
+    // Bind any cordova events here. Common events are:
+    // 'pause', 'resume', etc.
+    onDeviceReady: function () {
+        
+        pictureSource=navigator.camera.PictureSourceType;
+        destinationType=navigator.camera.DestinationType;
+
         $(".addItemButton").click(function (e) {
             askForImage();
-
-
         });
         $(".addItemConfirm").click(function (e) {
             $(list.addItem(
@@ -40,17 +55,8 @@ var app = {
 
         attachEvents();
 
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         document.addEventListener("pause", this.onPause.bind(this), false);
         document.addEventListener("resume", this.onResume.bind(this), false);
-
-    },
-
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
-    onDeviceReady: function () {
 
 
     },
@@ -76,7 +82,7 @@ var app = {
 
     onResume: function () {
         $("#blinder").html("Welcome back");
-        $("#blinder").fadeOut(1000, function () { $(this).remove(); })
+        $("#blinder").fadeOut(3000, function () { $(this).remove(); })
     },
 
 };
@@ -86,11 +92,11 @@ function onSuccess(imageData) {
     $("#deleteCurrentImage").click(askForImage);
 }
 // Reposition the popover if the orientation changes.
-window.onorientationchange = function () {
-    var cameraPopoverHandle = new CameraPopoverHandle();
-    var cameraPopoverOptions = new CameraPopoverOptions(0, 0, 100, 100, Camera.PopoverArrowDirection.ARROW_ANY, 400, 500);
-    cameraPopoverHandle.setPosition(cameraPopoverOptions);
-}
+// window.onorientationchange = function () {
+//     var cameraPopoverHandle = new CameraPopoverHandle();
+//     var cameraPopoverOptions = new CameraPopoverOptions(0, 0, 100, 100, Camera.PopoverArrowDirection.ARROW_ANY, 400, 500);
+//     cameraPopoverHandle.setPosition(cameraPopoverOptions);
+// }
 function askForImage() {
     $("#newImage").html(`
     <button class="btn btn-primary" id="useCamera"> <i class="fa pr-2 fa-camera"></i>Take a picture</button>
@@ -106,10 +112,16 @@ function askForImage() {
 }
 function openCamera(useCamera) {
     navigator.camera.getPicture(onSuccess, function (message) {
-        alert('Failed to get picture because: ' + message);
+        setTimeout("alert('Failed to get picture);", 0);
     }, {
-        destinationType: Camera.DestinationType.FILE_URI,
-        sourceType: useCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY
+        quality: 50,
+        destinationType: destinationType.DATA_URL,
+        sourceType: useCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY,
+        mediaType: Camera.MediaType.PICTURE,
+        encodingType: Camera.EncodingType.JPEG,
+        cameraDirection: Camera.Direction.BACK,
+        targetWidth: 500, 
+        targetHeight: 600
     });
     $("#newImage").html(`<button class="btn btn-warning" id="goBack">Back</button>`);
     $("#goBack").click(function() {
